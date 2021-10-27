@@ -1,4 +1,4 @@
--- DROP DATABASE cristobay_db; 
+DROP DATABASE cristobay_db; 
 CREATE DATABASE IF NOT EXISTS cristobay_DB;
 
 USE cristobay_DB;
@@ -11,10 +11,11 @@ CREATE TABLE IF NOT EXISTS usuario (
 ID_usuario INT NOT NULL AUTO_INCREMENT,
 correo VARCHAR(50) NOT NULL UNIQUE,
 nombre_usuario VARCHAR(50) NOT NULL,
-apellidos_usuario VARCHAR (50) NOT NULL,
+apellido_1 VARCHAR (20) NOT NULL,
+apellido_2 VARCHAR (20),
 nick_usuario VARCHAR(20) NOT NULL UNIQUE,
 clave VARCHAR (20) NOT NULL,
-monedero FLOAT(3,2) DEFAULT 0,
+monedero FLOAT(5,2) DEFAULT 0,
 PRIMARY KEY (ID_usuario)
 );
 
@@ -35,14 +36,15 @@ PRIMARY KEY (ID_articulo)
 -- -----------------------
 DROP TABLE IF EXISTS subastar;
 CREATE TABLE IF NOT EXISTS subastar (
-fecha DATETIME NOT NULL, 
+fecha_inicio TIMESTAMP NOT NULL UNIQUE, 
+fecha_fin TIMESTAMP NOT NULL UNIQUE, 
 ID_usuario INT,
 ID_articulo INT,
-precio_salida FLOAT (3,2) NOT NULL,
-estado BOOLEAN,
+precio_salida FLOAT (5,2) NOT NULL,
+estado ENUM ("abierta", "cerrada por tiempo", "cerrada por eliminación", "cerrada por compra") DEFAULT "cerrada por tiempo",
 FOREIGN KEY (ID_usuario) REFERENCES usuario(ID_usuario),
 FOREIGN KEY (ID_articulo) REFERENCES articulo(ID_articulo),
-PRIMARY KEY (fecha, ID_usuario, ID_articulo)
+PRIMARY KEY (fecha_inicio, fecha_fin, ID_usuario, ID_articulo)
 );
 
 -- --------------------
@@ -50,13 +52,15 @@ PRIMARY KEY (fecha, ID_usuario, ID_articulo)
 -- --------------------
 DROP TABLE IF EXISTS pujar;
 CREATE TABLE IF NOT EXISTS pujar (
-fecha DATETIME NOT NULL, 
+fecha_puja DATETIME NOT NULL, 
 ID_usuario INT,
 ID_articulo INT,
-fecha_subasta DATETIME,
+fecha_inicio_subasta TIMESTAMP,
+fecha_fin_subasta TIMESTAMP,
 cantidad FLOAT (3,2) NOT NULL,
-FOREIGN KEY (ID_usuario) REFERENCES usuario(ID_usuario),
-FOREIGN KEY (ID_articulo) REFERENCES articulo(ID_articulo),
-FOREIGN KEY (fecha_subasta) REFERENCES subastar(fecha),
-PRIMARY KEY (fecha)
+FOREIGN KEY (ID_usuario) REFERENCES subastar(ID_usuario),
+FOREIGN KEY (ID_articulo) REFERENCES subastar(ID_articulo),
+FOREIGN KEY (fecha_inicio_subasta) REFERENCES subastar(fecha_inicio),
+FOREIGN KEY (fecha_fin_subasta) REFERENCES subastar(fecha_fin),
+PRIMARY KEY (fecha_puja)
 );
