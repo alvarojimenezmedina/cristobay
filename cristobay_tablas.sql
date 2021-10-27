@@ -1,7 +1,7 @@
 DROP DATABASE cristobay_db; 
-CREATE DATABASE IF NOT EXISTS cristobay_DB;
+CREATE DATABASE IF NOT EXISTS cristobay_db;
 
-USE cristobay_DB;
+USE cristobay_db;
 
 -- ----------------------
 -- Creación tabla USUARIO
@@ -52,7 +52,7 @@ PRIMARY KEY (fecha_inicio, fecha_fin, ID_usuario, ID_articulo)
 -- --------------------
 DROP TABLE IF EXISTS pujar;
 CREATE TABLE IF NOT EXISTS pujar (
-fecha_puja DATETIME NOT NULL, 
+fecha_puja TIMESTAMP NOT NULL, 
 ID_usuario INT,
 ID_articulo INT,
 fecha_inicio_subasta TIMESTAMP,
