@@ -8,15 +8,15 @@ USE cristobay_db;
 -- ----------------------
 DROP TABLE IF EXISTS usuario;
 CREATE TABLE IF NOT EXISTS usuario (
-ID_usuario INT NOT NULL AUTO_INCREMENT,
-correo VARCHAR(50) NOT NULL UNIQUE,
-nombre_usuario VARCHAR(50) NOT NULL,
+id_usuario INT NOT NULL AUTO_INCREMENT,
+login VARCHAR(20) NOT NULL UNIQUE,
+clave VARCHAR (20) NOT NULL,
+monedero INT DEFAULT 0,
+nombre VARCHAR(50) NOT NULL,
 apellido_1 VARCHAR (20) NOT NULL,
 apellido_2 VARCHAR (20),
-nick_usuario VARCHAR(20) NOT NULL UNIQUE,
-clave VARCHAR (20) NOT NULL,
-monedero FLOAT(5,2) DEFAULT 0,
-PRIMARY KEY (ID_usuario)
+correo VARCHAR(50) NOT NULL UNIQUE,
+PRIMARY KEY (id_usuario)
 );
 
 -- -----------------------
@@ -24,11 +24,11 @@ PRIMARY KEY (ID_usuario)
 -- -----------------------
 DROP TABLE IF EXISTS articulo;
 CREATE TABLE IF NOT EXISTS articulo (
-ID_articulo INT NOT NULL AUTO_INCREMENT,
-nombre_articulo VARCHAR (50) NOT NULL,
+id_articulo INT NOT NULL AUTO_INCREMENT,
+nombre VARCHAR (50) NOT NULL,
 descripcion VARCHAR(160) NOT NULL,
 imagen VARCHAR(50),
-PRIMARY KEY (ID_articulo)
+PRIMARY KEY (id_articulo)
 );
 
 -- -----------------------
@@ -36,15 +36,15 @@ PRIMARY KEY (ID_articulo)
 -- -----------------------
 DROP TABLE IF EXISTS subastar;
 CREATE TABLE IF NOT EXISTS subastar (
+id_usuario INT,
+id_articulo INT,
 fecha_inicio TIMESTAMP NOT NULL UNIQUE, 
 fecha_fin TIMESTAMP NOT NULL UNIQUE, 
-ID_usuario INT,
-ID_articulo INT,
-precio_salida FLOAT (5,2) NOT NULL,
-estado ENUM ("abierta", "cerrada por tiempo", "cerrada por eliminación", "cerrada por compra") DEFAULT "cerrada por tiempo",
-FOREIGN KEY (ID_usuario) REFERENCES usuario(ID_usuario),
-FOREIGN KEY (ID_articulo) REFERENCES articulo(ID_articulo),
-PRIMARY KEY (fecha_inicio, fecha_fin, ID_usuario, ID_articulo)
+estado ENUM ("creada", "abierta", "cerrada por compra", "cerrada por eliminación",  "cerrada por tiempo") DEFAULT "creada",
+precio_salida INT NOT NULL,
+FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+FOREIGN KEY (id_articulo) REFERENCES articulo(id_articulo),
+PRIMARY KEY (id_articulo, fecha_inicio, fecha_fin)
 );
 
 -- --------------------
@@ -52,15 +52,13 @@ PRIMARY KEY (fecha_inicio, fecha_fin, ID_usuario, ID_articulo)
 -- --------------------
 DROP TABLE IF EXISTS pujar;
 CREATE TABLE IF NOT EXISTS pujar (
-fecha_puja TIMESTAMP NOT NULL, 
-ID_usuario INT,
-ID_articulo INT,
-fecha_inicio_subasta TIMESTAMP,
-fecha_fin_subasta TIMESTAMP,
-cantidad FLOAT (5,2) NOT NULL CHECK (cantidad > 0),
-FOREIGN KEY (ID_usuario) REFERENCES subastar(ID_usuario),
-FOREIGN KEY (ID_articulo) REFERENCES subastar(ID_articulo),
-FOREIGN KEY (fecha_inicio_subasta) REFERENCES subastar(fecha_inicio),
-FOREIGN KEY (fecha_fin_subasta) REFERENCES subastar(fecha_fin),
-PRIMARY KEY (fecha_puja)
+fecha_y_hora TIMESTAMP, 
+id_usuario INT,
+id_articulo INT,
+fecha_inicio TIMESTAMP,
+fecha_fin TIMESTAMP,
+cantidad_pujada INT NOT NULL CHECK (cantidad_pujada > 0),
+FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario),
+FOREIGN KEY (id_articulo, fecha_inicio, fecha_fin) REFERENCES subastar(id_articulo, fecha_inicio, fecha_fin),
+PRIMARY KEY (fecha_y_hora, id_usuario, id_articulo, fecha_inicio, fecha_fin)
 );
